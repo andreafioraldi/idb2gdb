@@ -22,7 +22,7 @@ class IdbloadCommand(gdb.Command):
     '''
 
     def __init__(self):
-        super(IdbloadCommand, self).__init__("idb_load", gdb.COMMAND_USER)
+        super(IdbloadCommand, self).__init__("idb_load", gdb.COMPLETE_FILENAME)
 
     def invoke(self, arg, from_tty):
         global _ida_names
@@ -81,7 +81,7 @@ class IdbbreakCommand(gdb.Command):
     '''
 
     def __init__(self):
-        super(IdbbreakCommand, self).__init__("idb_break", gdb.COMMAND_USER)
+        super(IdbbreakCommand, self).__init__("idb_break", gdb.COMMAND_BREAKPOINTS)
 
     def invoke(self, arg, from_tty):
         global _ida_names
