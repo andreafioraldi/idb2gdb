@@ -9,6 +9,12 @@ Load function names from an IDA Pro database inside GDB
 + `idb_break <name>` Set a breakpoint from an IDB name
 + `idb_clean` Delete all loaded names
 
+## function
+
++ `$idb("function_name")` GDB function to solve an IDB name to its address
+
+e.g. `b *$idb("main")` set a breakpoint on main
+
 ## install
 
 ```

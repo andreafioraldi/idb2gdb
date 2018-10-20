@@ -7,9 +7,12 @@ import idb
 import gdb
 
 def _image_base():
-    mappings = gdb.execute("info proc mappings", to_string=True)
-    first_num_pos = mappings.find("0x")
-    return int(mappings[first_num_pos: mappings.find(" ", first_num_pos)], 16)
+    try:
+        mappings = gdb.execute("info proc mappings", to_string=True)
+        first_num_pos = mappings.find("0x")
+        return int(mappings[first_num_pos: mappings.find(" ", first_num_pos)], 16)
+    except:
+        return 0
 
 _ida_names = {}
 
@@ -30,7 +33,7 @@ class IdbloadCommand(gdb.Command):
             base = api.idaapi.get_imagebase()
             for ea in api.idautils.Functions():
                 _ida_names[api.idc.GetFunctionName(ea)] = ea - base
-
+                
 
 class IdblistCommand(gdb.Command):
     '''
@@ -57,7 +60,7 @@ class IdblistCommand(gdb.Command):
 
 class IdbsolveCommand(gdb.Command):
     '''
-    Solve an IDB name to its address
+    Solve an IDB function name to its address
     '''
 
     def __init__(self):
@@ -74,7 +77,7 @@ class IdbsolveCommand(gdb.Command):
 
 class IdbbreakCommand(gdb.Command):
     '''
-    Set a breakpoint from an IDB name
+    Set a breakpoint from an IDB function name
     '''
 
     def __init__(self):
@@ -107,8 +110,27 @@ class IdbcleanCommand(gdb.Command):
         _ida_names = {}
 
 
+class IdbFunction(gdb.Function):
+    '''
+    Function to solve IDB function names to its address
+    '''
+
+    def __init__(self):
+        super(IdbFunction, self).__init__("idb")
+
+    def invoke(self, arg):
+        global _ida_names
+        
+        try:
+            return (_image_base() + _ida_names[arg.string()])
+        except KeyError:
+            print("error: name %s not found" % arg)
+
+
+
 IdbloadCommand()
 IdblistCommand()
 IdbsolveCommand()
 IdbbreakCommand()
 IdbcleanCommand()
+IdbFunction()
